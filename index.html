@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chocolate of Feelings </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #fff9f0;  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .floating-hearts {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .heart-float {
+      position: absolute;
+      color: #ffb7c5;
+      font-size: 1.2rem;
+      opacity: 0.5;
+      animation: floatUp 8s infinite ease-in-out;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0.2; }
+      100% { transform: translateY(-10vh) rotate(20deg); opacity: 0; }
+    }
+
+    .main-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 700px;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: filter 0.3s;
+    }
+
+    /* landing page */
+    .landing {
+      text-align: center;
+      background: rgba(255, 245, 235, 0.7);
+      backdrop-filter: blur(2px);
+      padding: 2.5rem 2rem;
+      border-radius: 60px 20px 60px 20px;
+      box-shadow: 0 15px 30px rgba(253, 187, 170, 0.15);
+      border: 1px solid #ffe2d0;
+      animation: fadeIn 1.4s ease;
+      width: 100%;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.96); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .landing h1 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      color: #a75b4c;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', 'Quicksand', monospace;
+    }
+
+    .landing p {
+      font-size: 1.3rem;
+      color: #c0796b;
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    .btn {
+      background: #ffc8b0;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #613b32;
+      box-shadow: 0 6px 0 #dc9e89;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid #ffb197;
+      letter-spacing: 2px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #dc9e89;
+      background: #ffd5c2;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #dc9e89;
+    }
+
+    /* section coklat (tersembunyi awalnya) */
+    .chocolate-section {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: rise 1s ease;
+    }
+
+    @keyframes rise {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .chocolate-title {
+      font-size: 1.7rem;
+      color: #8f5e4b;
+      margin-bottom: 1rem;
+      font-weight: 300;
+      background: #ffede3d0;
+      padding: 0.3rem 2rem;
+      border-radius: 40px;
+      backdrop-filter: blur(2px);
+    }
+
+    .chocolate-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      max-width: 480px;
+      width: 100%;
+      margin: 1.5rem 0;
+      padding: 20px;
+      background: #fbe1d2;
+      border-radius: 70px 70px 30px 30px;
+      box-shadow: 0 20px 0 #ac7d68, 0 30px 25px #f0cfbe;
+      border: 2px solid #ad6e58;
+    }
+
+    .chocolate-piece {
+      aspect-ratio: 1 / 1.1;
+      background: #7a4d3a;
+      background-image: radial-gradient(circle at 30% 35%, #9e6f5a 4%, transparent 8%);
+      border-radius: 15px 8px 15px 8px;
+      box-shadow: inset -2px -4px 0 #4d2f22, 0 6px 0 #4d2f22, 0 8px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s ease;
+      color: #fbe8d4;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 0 #3b241b;
+      border: 1px solid #eeba9d;
+      transform: rotate(0deg);
+    }
+
+    .chocolate-piece:not(.taken):hover {
+      transform: scale(1.02) rotate(-1deg);
+      background: #8f5a44;
+      box-shadow: inset -2px -4px 0 #5f3a2b, 0 6px 0 #5f3a2b;
+    }
+
+    .chocolate-piece.taken {
+      opacity: 0.4;
+      background: #ab8a78;
+      box-shadow: inset 0 0 0 2px #ccb09b, 0 4px 0 #6b4f40;
+      cursor: default;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(45deg, #bba28e33, #bba28e33 8px, #ccb5a333 8px, #ccb5a333 16px);
+      color: transparent;
+      text-shadow: none;
+    }
+
+    .message-pop {
+      background: #fffbee;
+      padding: 1.8rem 2.2rem;
+      border-radius: 90px 20px 90px 20px;
+      font-size: 1.8rem;
+      color: #b35d47;
+      text-align: center;
+      max-width: 450px;
+      margin: 25px 0 10px;
+      box-shadow: 0 20px 30px #ffc3ad83;
+      border: 2px solid #ffc2a1;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+      font-weight: 450;
+      line-height: 1.5;
+      letter-spacing: 0.5px;
+      animation: popMsg 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+
+    @keyframes popMsg {
+      0% { opacity: 0; transform: scale(0.7); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .blur-bg {
+      filter: blur(3px);
+      transition: 0.2s;
+      pointer-events: none;
+    }
+
+    .count-indicator {
+      font-size: 1rem;
+      color: #a4816e;
+      background: #ffe2d1;
+      padding: 0.5rem 1.8rem;
+      border-radius: 30px;
+      margin: 15px 0 5px;
+    }
+
+    .flower-bouquet {
+      margin: 30px 0 15px;
+      font-size: 3.5rem;
+      filter: drop-shadow(0 8px 12px #ffb7a7);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 2s, transform 2s;
+    }
+
+    .flower-bouquet.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .petal-fall {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .petal {
+      position: absolute;
+      color: #ffaeab;
+      font-size: 1.9rem;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10%) rotate(0deg); opacity: 0.6; }
+      100% { transform: translateY(110vh) rotate(160deg); opacity: 0; }
+    }
+
+    .extra-button {
+      margin: 25px 0 15px;
+      background: #ffbf9f;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      border: none;
+      font-size: 1.6rem;
+      color: #482e24;
+      font-weight: bold;
+      box-shadow: 0 6px 0 #b47b64;
+      cursor: pointer;
+      transition: 0.1s;
+      border: 1px solid #ffd9c6;
+    }
+
+    .extra-button:active {
+      transform: translateY(5px);
+      box-shadow: 0 1px 0 #b47b64;
+    }
+
+    .response-options {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      margin: 30px 0 15px;
+    }
+
+    .resp-btn {
+      background: #ffd9c6;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 40px;
+      font-size: 1.7rem;
+      color: #5b362a;
+      box-shadow: 0 5px 0 #b4846e;
+      transition: all 0.1s;
+      cursor: pointer;
+      border: 1px solid #fecbb6;
+    }
+
+    .resp-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #b4846e;
+    }
+
+    .happy-message {
+      font-size: 3rem;
+      margin-top: 20px;
+      color: #e07960;
+      text-shadow: 0 0 20px #ffc3a0;
+      animation: glowPulse 2s infinite;
+    }
+
+    @keyframes glowPulse {
+      0% { text-shadow: 0 0 10px #ffbba6; }
+      50% { text-shadow: 0 0 30px #ff8870, 0 0 10px #ffcbad; }
+      100% { text-shadow: 0 0 10px #ffbba6; }
+    }
+
+    @media (max-width: 450px) {
+      .chocolate-bar { gap: 6px; }
+      .chocolate-piece { font-size: 1.2rem; }
+      .message-pop { font-size: 1.4rem; padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-hearts" id="floatingHearts"></div>
+  <div class="petal-fall" id="petalFall"></div>
+  <div class="main-container" id="mainContainer">
+    <div id="landingPage" class="landing">
+      <h1>🍫 saya buat sesuatu untuk kamu…</h1>
+      <p>✨ dengan sedikit rasa kangen saya itu ✨</p>
+      <button class="btn" id="openBtn">Buka perlahan ya</button>
+    </div>
+  <div id="chocolateSection" class="chocolate-section">
+      <div class="chocolate-title">🍬 Chocolate of Feelings 🍬</div>
+      <div id="messageBox" class="message-pop" style="min-height: 6rem;">✨ ambil sepotong coklat... ✨</div>
+      <div class="chocolate-bar" id="chocolateBar"></div>
+      <div class="count-indicator" id="counterDisplay">tersisa 12 potongan</div>
+    </div>
+    <div id="climaxArea" style="width:100%; display: flex; flex-direction: column; align-items: center;"></div>
+  </div>
+
+  <script>
+    (function() {
+      const messages = [
+        "🍫 coklat pertama: untuk senyummu sangat manis ya",
+        "🍬 potongan kedua: saya suka semua tentang kamu",
+        "🧸 ketiga: kamu lebih manis daripada pemanis",
+        "☁️ keempat: tiap bersamamu, rasanya saya seperti orang paling beruntung",
+        "🌼 kelima: kamu membuat hari biasa jadi spesial",
+        "💭 keenam: kamu selalu ada di pikiran saya",
+        "🌟 ketujuh: bersama kamu, saya menjadi versi terbaik dari diri saya",
+        "🎀 kedelapan: kamu itu rumah, tempat saya untuk pulang",
+        "💫 kesembilan: saya selalu merasa nyaman saat bersama kamu",
+        "🌹 kesepuluh: kamu istimewa, lebih dari kata-kata",
+        "💌 kesebelas: saya ga akan pernah mau kehilangan kamu...",
+        "💘 TERAKHIR: ayo jadi pasangan Valentine saya? happy valentine sayang 💘"
+      ];
+
+      let takenCount = 0;        
+      let lastMessageTime = 0;
+      const totalPieces = 12;
+
+      const landing = document.getElementById('landingPage');
+      const chocolateSection = document.getElementById('chocolateSection');
+      const chocolateBar = document.getElementById('chocolateBar');
+      const messageBox = document.getElementById('messageBox');
+      const counterDisplay = document.getElementById('counterDisplay');
+      const climaxArea = document.getElementById('climaxArea');
+      const mainContainer = document.getElementById('mainContainer');
+
+      function createFloatingHearts() {
+        const heartsDiv = document.getElementById('floatingHearts');
+        for (let i = 0; i < 16; i++) {
+          const heart = document.createElement('div');
+          heart.className = 'heart-float';
+          heart.innerHTML = '❤️';
+          heart.style.left = Math.random() * 100 + '%';
+          heart.style.animationDuration = (6 + Math.random() * 8) + 's';
+          heart.style.fontSize = (0.7 + Math.random() * 1) + 'rem';
+          heart.style.opacity = 0.2 + Math.random() * 0.3;
+          heartsDiv.appendChild(heart);
+        }
+      }
+      createFloatingHearts();
+
+      function renderChocolatePieces() {
+        chocolateBar.innerHTML = '';
+        for (let i = 0; i < totalPieces; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'chocolate-piece';
+          if (i < takenCount) piece.classList.add('taken');
+          piece.dataset.index = i;
+          piece.textContent = (i < takenCount) ? '✓' : '🍫';
+          piece.addEventListener('click', () => handlePieceClick(i));
+          chocolateBar.appendChild(piece);
+        }
+      }
+
+      function handlePieceClick(index) {
+        if (index !== takenCount) return;
+        if (takenCount >= totalPieces) return;
+
+        takenCount++;
+
+        const pieces = document.querySelectorAll('.chocolate-piece');
+        pieces.forEach((p, i) => {
+          if (i < takenCount) {
+            p.classList.add('taken');
+            p.textContent = '✓';
+          }
+        });
+
+        const msgIndex = takenCount - 1;
+        messageBox.textContent = messages[msgIndex];
+
+        mainContainer.classList.add('blur-bg');
+        setTimeout(() => mainContainer.classList.remove('blur-bg'), 300);
+
+        counterDisplay.textContent = `tersisa ${totalPieces - takenCount} potongan`;
+
+        if (takenCount === totalPieces) {
+          messageBox.style.animation = 'none';
+          messageBox.offsetHeight; // reflow
+          messageBox.style.animation = 'popMsg 0.5s';
+
+          counterDisplay.style.opacity = '0.4';
+          counterDisplay.textContent = '❤️ semuanya sudah terbuka ❤️';
+
+          setTimeout(() => {
+            mainContainer.classList.remove('blur-bg');
+
+            const bouquetDiv = document.createElement('div');
+            bouquetDiv.className = 'flower-bouquet show';
+            bouquetDiv.innerHTML = '🌸🌼🌷🌺🌻   untuk kamu sayang  🌸🌼🌷🌺🌻';
+            climaxArea.appendChild(bouquetDiv);
+
+            startPetalFall();
+
+            const inviteBtn = document.createElement('button');
+            inviteBtn.className = 'extra-button';
+            inviteBtn.textContent = 'mau jadi pasangan valentine saya?';
+            climaxArea.appendChild(inviteBtn);
+
+            const respDiv = document.createElement('div');
+            respDiv.className = 'response-options';
+            respDiv.innerHTML = `
+              <button class="resp-btn" id="yesBtn">Iya mau </button>
+              <button class="resp-btn" id="noBtn">hmm ga dulu deh </button>
+            `;
+            climaxArea.appendChild(respDiv);
+
+            const happyMsg = document.createElement('div');
+            happyMsg.className = 'happy-message';
+            happyMsg.textContent = '💝 Happy Valentine 💝';
+            climaxArea.appendChild(happyMsg);
+
+            document.getElementById('yesBtn').addEventListener('click', function() {
+              alert('Yay! terimakasih sayang, happy valentine');
+              for (let i=0; i<8; i++) {
+                setTimeout(() => {
+                  const conf = document.createElement('div');
+                  conf.style.position = 'fixed'; conf.style.left = Math.random()*100+'%'; conf.style.top='0';
+                  conf.style.fontSize='3rem'; conf.style.pointerEvents='none'; conf.style.zIndex='99';
+                  conf.innerHTML = '🎉💖🍫🥂';
+                  document.body.appendChild(conf);
+                  setTimeout(() => conf.remove(), 1500);
+                }, i*100);
+              }
+            });
+
+            document.getElementById('noBtn').addEventListener('click', function() {
+              alert('yah.. saya kecewa, saya balik ke zeta ya ');
+              const maybeLater = document.createElement('div');
+              maybeLater.style.fontSize='2rem'; maybeLater.textContent='💌 ke roomchat sini, saya mau pamer zeta karna kamu nolak saya 💌';
+              climaxArea.appendChild(maybeLater);
+            });
+
+          }, 500); 
+
+          messageBox.style.boxShadow = '0 0 40px #ff9472';
+          messageBox.style.transition = '2s';
+        }
+
+        localStorage.setItem('takenCount', takenCount);
+      }
+
+      function startChocolate() {
+        takenCount = 0;
+        renderChocolatePieces();
+        messageBox.textContent = '✨ ambil sepotong coklat... ✨';
+        counterDisplay.textContent = `tersisa ${totalPieces} potongan`;
+        counterDisplay.style.opacity = '1';
+        climaxArea.innerHTML = ''; 
+        mainContainer.classList.remove('blur-bg');
+    
+        landing.style.display = 'none';
+        chocolateSection.style.display = 'flex';
+      }
+
+      document.getElementById('openBtn').addEventListener('click', startChocolate);
+
+      function startPetalFall() {
+        const petalContainer = document.getElementById('petalFall');
+        for (let i=0; i<20; i++) {
+          const petal = document.createElement('div');
+          petal.className = 'petal';
+          petal.innerHTML = i%2===0 ? '🌸' : '🌼';
+          petal.style.left = Math.random()*100 + '%';
+          petal.style.animationDuration = (4 + Math.random()*6) + 's';
+          petal.style.fontSize = (1.2 + Math.random()*1.5) + 'rem';
+          petal.style.opacity = 0.5 + Math.random()*0.4;
+          petalContainer.appendChild(petal);
+          setTimeout(() => petal.remove(), 10000);
+        }
+      }
+
+      renderChocolatePieces();
+
+
+      window.handlePieceClick = function(index) {
+        if (index !== takenCount) return;
+        if (takenCount >= totalPieces) return;
+
+        takenCount++;
+
+        const pieces = document.querySelectorAll('.chocolate-piece');
+        pieces.forEach((p, i) => {
+          if (i < takenCount) {
+            p.classList.add('taken');
+            p.textContent = '✓';
+          }
+        });
+
+        const msgIndex = takenCount - 1;
+        messageBox.textContent = messages[msgIndex];
+
+        mainContainer.classList.add('blur-bg');
+        setTimeout(() => mainContainer.classList.remove('blur-bg'), 300);
+
+        counterDisplay.textContent = `tersisa ${totalPieces - takenCount} potongan`;
+
+        if (takenCount === totalPieces) {
+          messageBox.style.animation = 'none';
+          messageBox.offsetHeight;
+          messageBox.style.animation = 'popMsg 0.5s';
+          counterDisplay.style.opacity = '0.4';
+          counterDisplay.textContent = '❤️ simpan pesan terakhir di hati ❤️';
+
+         
+          setTimeout(() => {
+            mainContainer.classList.remove('blur-bg');
+
+            const bouquetDiv = document.createElement('div');
+            bouquetDiv.className = 'flower-bouquet show';
+            bouquetDiv.innerHTML = '🌸🌼🌷🌺🌻  untuk kamu sayang  🌸🌼🌷🌺🌻';
+            climaxArea.appendChild(bouquetDiv);
+
+            startPetalFall();
+
+            const inviteBtn = document.createElement('button');
+            inviteBtn.className = 'extra-button';
+            inviteBtn.textContent = 'mau jadi pasangan valentine saya?';
+            climaxArea.appendChild(inviteBtn);
+
+            const respDiv = document.createElement('div');
+            respDiv.className = 'response-options';
+            respDiv.innerHTML = `
+              <button class="resp-btn" id="yesBtn">Iya mau sayang</button>
+              <button class="resp-btn" id="noBtn">hmm ga dulu deh 🤔</button>
+            `;
+            climaxArea.appendChild(respDiv);
+
+            const happyMsg = document.createElement('div');
+            happyMsg.className = 'happy-message';
+            happyMsg.textContent = '💝 Happy Valentine 💝';
+            climaxArea.appendChild(happyMsg);
+
+            document.getElementById('yesBtn')?.addEventListener('click', function() {
+              alert( 'Yay! terimakasih sayang, happy valentine!');
+              for (let i=0; i<8; i++) {
+                setTimeout(() => {
+                  const conf = document.createElement('div');
+                  conf.style.position = 'fixed'; conf.style.left = Math.random()*100+'%'; conf.style.top='0';
+                  conf.style.fontSize='3rem'; conf.style.pointerEvents='none'; conf.style.zIndex='99';
+                  conf.innerHTML = '🎉💖🍫🥂';
+                  document.body.appendChild(conf);
+                  setTimeout(() => conf.remove(), 1500);
+                }, i*100);
+              }
+            });
+
+            document.getElementById('noBtn')?.addEventListener('click', function() {
+              alert('yah.. saya kecewa, saya balik ke zeta ya ');
+              const laterDiv = document.createElement('div');
+              laterDiv.style.fontSize='2rem'; laterDiv.textContent='💌 ke roomchat sini, saya mau pamer zeta karna kamu nolak saya 💌';
+              climaxArea.appendChild(laterDiv);
+            });
+          }, 25000); 
+        }
+      };
+
+      
+    })();
+  </script>
+</body>
+</html>
